@@ -3,7 +3,12 @@ export const types = `
         _id: String!
         email: String!
         username: String!
-    } 
+    }
+
+    type Authentication {
+        status: String
+        user: User!
+    }
 `
 
 export const queries = `
@@ -11,6 +16,6 @@ export const queries = `
 `
 
 export const mutations = `
-    login(email: String!, password: String!): User!
+    login(username: String!, password: String!): Authentication!
     register(email: String!, password: String!, verifyPassword: String!, username: String!): User!
 `

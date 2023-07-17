@@ -24,10 +24,25 @@ const userMutations = {
    * @param {Object} data - Login datas
    * @returns - Success message
    */
-  async login(root, data) {
-    console.log(data, "LOGIN")
+  async login(root, data, { res }) {
+    const response = await Users.login(data)
 
-    return null
+    const { token } = response
+    const oneDay = 1 * 24 * 3600 * 1000
+
+    const cookieOptions = {
+      httpOnly: true,
+      expires: new Date(Date.now() + oneDay),
+      maxAge: oneDay,
+      sameSite: "none",
+      secure: true,
+    }
+
+    res.cookie("auth-token", token, cookieOptions)
+
+    console.log(response, "lll")
+
+    return response
   },
 }
 

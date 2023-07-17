@@ -1,15 +1,21 @@
 import { Login } from "../components"
 import { mutations } from "../graphql"
 import { useMutation } from "@apollo/client"
+import { Alert } from "../../components"
+import withRouter from "../../withRouter"
 
-const LoginContainer = () => {
+const LoginContainer = ({ navigate, ...props }) => {
   const [loginMutation] = useMutation(mutations.LOGIN)
   const [registerMutation] = useMutation(mutations.REGISTER)
 
   const login = variables => {
     loginMutation({ variables })
       .then(response => {
-        console.log(response)
+        const { data: login } = response
+
+        if (login.login.status === "loggedIn") {
+          navigate("/dashboard")
+        }
       })
       .catch(error => {
         console.log(error)
@@ -17,19 +23,18 @@ const LoginContainer = () => {
   }
 
   const register = variables => {
-    console.log(variables, "lalalaal")
     registerMutation({ variables })
       .then(response => {
-        console.log(response)
+        return Alert.success("Successfully", "Registered your account!")
       })
       .catch(error => {
-        console.log(error)
+        return Alert.error(error)
       })
   }
 
-  const extendedProps = { login, register }
+  const extendedProps = { login, register, ...props }
 
   return <Login {...extendedProps} />
 }
 
-export default LoginContainer
+export default withRouter(LoginContainer)

@@ -3,6 +3,7 @@ import { ApolloServer } from "apollo-server-express"
 import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core"
 import { connect, disconnect } from "./db/connection"
 import { typeDefs, resolvers } from "./graphql/schema"
+import { userMiddleware } from "./auth"
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -32,6 +33,9 @@ async function startApolloServer() {
   await server.start()
 
   const app = express()
+
+  app.use(userMiddleware)
+
   server.applyMiddleware({ app, path: "/graphql", cors: corsOptions })
 
   app.listen(PORT, () => {
