@@ -40,8 +40,6 @@ const userMutations = {
 
     res.cookie("auth-token", token, cookieOptions)
 
-    console.log(response, "lll")
-
     return response
   },
 }

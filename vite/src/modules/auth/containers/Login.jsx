@@ -13,6 +13,8 @@ const LoginContainer = ({ navigate, ...props }) => {
       .then(response => {
         const { data: login } = response
 
+        Alert.success("Successfully", "Logged in.")
+
         if (login.login.status === "loggedIn") {
           navigate("/dashboard")
         }
