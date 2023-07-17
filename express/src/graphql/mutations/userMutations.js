@@ -7,7 +7,7 @@ const userMutations = {
    * @returns - Success message
    */
   async register(root, data) {
-    const { email, username, password, verifyPassword } = data || {}
+    const { password, verifyPassword } = data || {}
 
     if (password !== verifyPassword) throw new Error("Passwords not match.")
 
@@ -37,6 +37,11 @@ const userMutations = {
       sameSite: "none",
       secure: true,
     }
+
+    // if (process.env.NODE_ENV !== "development") {
+    //   cookieOptions.sameSite = true
+    //   delete cookieOptions.secure
+    // }
 
     res.cookie("auth-token", token, cookieOptions)
 

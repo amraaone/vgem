@@ -1,3 +1,5 @@
+import { Users } from "../../db/models"
+
 const userQueries = {
   /**
    * Get current user

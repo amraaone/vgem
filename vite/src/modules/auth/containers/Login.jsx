@@ -3,6 +3,7 @@ import { mutations } from "../graphql"
 import { useMutation } from "@apollo/client"
 import { Alert } from "../../components"
 import withRouter from "../../withRouter"
+import apolloClient from "../../../apolloClient"
 
 const LoginContainer = ({ navigate, ...props }) => {
   const [loginMutation] = useMutation(mutations.LOGIN)
@@ -13,10 +14,12 @@ const LoginContainer = ({ navigate, ...props }) => {
       .then(response => {
         const { data: login } = response
 
-        Alert.success("Successfully", "Logged in.")
-
         if (login.login.status === "loggedIn") {
-          navigate("/dashboard")
+          apolloClient.resetStore()
+
+          Alert.success("Successfully", "Logged in.")
+
+          navigate("/")
         }
       })
       .catch(error => {

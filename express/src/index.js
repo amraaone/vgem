@@ -3,6 +3,9 @@ import { ApolloServer } from "apollo-server-express"
 import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core"
 import { connect, disconnect } from "./db/connection"
 import { typeDefs, resolvers } from "./graphql/schema"
+import bodyParser from "body-parser"
+import cookieParser from "cookie-parser"
+import cors from "cors"
 import { userMiddleware } from "./auth"
 import dotenv from "dotenv"
 
@@ -10,10 +13,24 @@ dotenv.config()
 
 const { PORT } = process.env
 
+const app = express()
+
 const corsOptions = {
   origin: ["http://localhost:3000", "https://studio.apollographql.com"],
   credentials: true,
 }
+
+app.use(bodyParser.json({ limit: "15mb" }))
+app.use(bodyParser.urlencoded({ limit: "15mb", extended: true }))
+app.disable("x-powered-by")
+app.use(cookieParser())
+app.use(cors(corsOptions))
+
+app.use(userMiddleware)
+
+app.get("/health", async (_req, res) => {
+  res.end("ok")
+})
 
 async function startApolloServer() {
   await connect() // Connect to MongoDB
@@ -22,7 +39,7 @@ async function startApolloServer() {
     typeDefs,
     resolvers,
     playground: true,
-    context: ({ req, res }) => ({
+    context: async ({ req, res }) => ({
       res,
       user: req.user,
     }),
@@ -31,10 +48,6 @@ async function startApolloServer() {
   })
 
   await server.start()
-
-  const app = express()
-
-  app.use(userMiddleware)
 
   server.applyMiddleware({ app, path: "/graphql", cors: corsOptions })
 
